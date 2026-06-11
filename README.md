@@ -1,3 +1,5 @@
+🔗 **Live Demo:** https://elizabeth-shin.github.io/certification-study-coach/
+
 # Certification Study Coach
 
 Status: In development.
