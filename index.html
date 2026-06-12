@@ -2,347 +2,88 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Certification Study Coach — iCertify</title>
+
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    background: #F7F6F3;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #f7f6f3;
     color: #1a1a1a;
-    min-height: 100vh;
     padding: 2rem 1rem;
   }
-  .page { max-width: 820px; margin: 0 auto; }
-
-
-
-  /* Header */
-  .header { margin-bottom: 1.5rem; }
-  .header h1 { font-size: 22px; font-weight: 600; color: #111; }
-  .header p { font-size: 14px; color: #666; margin-top: 4px; }
-
-  /* Cert cards */
-  .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
-  .cert-card {
+  .page {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+  .card {
     background: #fff;
     border: 0.5px solid #ddd;
     border-radius: 12px;
-    padding: 1rem 1.25rem;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-    user-select: none;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
   }
-  .cert-card:hover { border-color: #aaa; background: #fafafa; }
-  .cert-card.selected { border: 2px solid #185FA5; background: #E6F1FB; }
-  .cert-card .cert-name { font-size: 14px; font-weight: 600; color: #111; }
-  .cert-card.selected .cert-name { color: #0C447C; }
-  .cert-card .cert-sub { font-size: 12px; color: #888; margin-top: 3px; }
-  .cert-card.selected .cert-sub { color: #185FA5; }
-
-  /* Buttons */
-  button.primary {
+  label {
+    font-size: 13px;
+    color: #666;
+    display: block;
+    margin-bottom: 8px;
+  }
+  textarea {
+    width: 100%;
+    min-height: 160px;
+    resize: vertical;
+    font-size: 14px;
+    line-height: 1.6;
+    border: 0.5px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #fafafa;
+  }
+  button {
     background: #111;
     color: #fff;
     border: none;
-    padding: 9px 22px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: inherit;
-    transition: opacity 0.15s;
-  }
-  button.primary:hover { opacity: 0.82; }
-  button.primary:disabled { opacity: 0.35; cursor: not-allowed; }
-  button.ghost {
-    background: transparent;
-    color: #555;
-    border: 0.5px solid #ccc;
-    padding: 9px 18px;
+    padding: 10px 22px;
     border-radius: 8px;
     font-size: 14px;
     cursor: pointer;
-    font-family: inherit;
+    margin-top: 12px;
   }
-  button.ghost:hover { background: #f5f5f5; }
-
-  /* Cards */
-  .card { background: #fff; border: 0.5px solid #ddd; border-radius: 12px; padding: 1.25rem; margin-bottom: 12px; }
-  .question-text { font-size: 16px; line-height: 1.65; color: #111; margin-bottom: 1.25rem; }
-
-  .options { display: flex; flex-direction: column; gap: 8px; }
-  .option-btn {
-    background: #f7f6f3;
-    border: 0.5px solid #ddd;
-    border-radius: 8px;
-    padding: 10px 14px;
-    text-align: left;
-    font-size: 14px;
-    font-family: inherit;
-    color: #222;
-    cursor: pointer;
-    transition: border-color 0.12s, background 0.12s;
-    line-height: 1.5;
+  button:hover {
+    opacity: 0.85;
   }
-  .option-btn:hover:not(:disabled) { border-color: #999; background: #fff; }
-  .option-btn:disabled { cursor: default; }
-  .option-btn.correct { background: #E1F5EE; border-color: #1D9E75; color: #085041; }
-  .option-btn.wrong { background: #FCEBEB; border-color: #E24B4A; color: #501313; }
-  .option-btn.reveal { background: #E1F5EE; border-color: #1D9E75; color: #085041; opacity: 0.65; }
-
-  /* Explanation */
-  .explanation-card { border-radius: 12px; padding: 1.25rem; margin-bottom: 12px; font-size: 14px; line-height: 1.7; }
-  .explanation-card.correct-exp { background: #E1F5EE; border: 0.5px solid #5DCAA5; color: #04342C; }
-  .explanation-card.wrong-exp { background: #FCEBEB; border: 0.5px solid #F09595; color: #501313; }
-  .exp-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-  .correct-exp .exp-label { color: #0F6E56; }
-  .wrong-exp .exp-label { color: #A32D2D; }
-
-  /* Score bar */
-  .score-bar-wrap { background: #eee; border-radius: 20px; height: 7px; margin: 6px 0 3px; overflow: hidden; }
-  .score-bar { height: 7px; border-radius: 20px; background: #1D9E75; transition: width 0.4s ease; }
-
-  /* Meta */
-  .meta-row { display: flex; gap: 12px; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
-  .meta-pill { font-size: 12px; padding: 3px 10px; border-radius: 20px; }
-  .meta-pill.cert { background: #E6F1FB; color: #0C447C; }
-  .meta-pill.qnum { background: #f0f0ee; color: #666; }
-
-  /* Loader */
-  .loader { display: inline-block; width: 13px; height: 13px; border: 2px solid #ddd; border-top-color: #333; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text { font-size: 14px; color: #888; padding: 1rem 0; }
-
-  /* Screens */
-  #screen-select { display: block; }
-  #screen-quiz { display: none; }
-  #screen-done { display: none; }
-
-  /* Footer */
-  .footer { margin-top: 2.5rem; text-align: center; font-size: 12px; color: #bbb; }
-
-  /* Done screen */
-  .done-card { background: #fff; border: 0.5px solid #ddd; border-radius: 12px; padding: 2.5rem; text-align: center; }
-  .big-score { font-size: 48px; font-weight: 700; color: #111; }
+  .footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 12px;
+    color: #bbb;
+  }
 </style>
 </head>
+
 <body>
 <div class="page">
+  <h1>Certification Study Coach</h1>
+  <p>Paste your study notes or exam topics below. This placeholder version does not analyze content yet — it simply provides the UI structure.</p>
 
-
-
-  <!-- SCREEN 1: SELECT CERT -->
-  <div id="screen-select">
-    <div class="header">
-      <h1>Certification Study Coach</h1>
-      <p>Choose a certification to start a 10-question practice session. Claude will quiz you and explain every answer.</p>
-    </div>
-    <div class="cert-grid">
-      <div class="cert-card" onclick="selectCert(this,'CIAM','Certified Identity & Access Management')">
-        <div class="cert-name">CIAM</div>
-        <div class="cert-sub">Identity & Access Management</div>
-      </div>
-      <div class="cert-card" onclick="selectCert(this,'AWS AI Practitioner','AWS Certified AI Practitioner')">
-        <div class="cert-name">AWS AI Practitioner</div>
-        <div class="cert-sub">Amazon Web Services</div>
-      </div>
-      <div class="cert-card" onclick="selectCert(this,'AWS Security Specialty','AWS Certified Security — Specialty')">
-        <div class="cert-name">AWS Security Specialty</div>
-        <div class="cert-sub">Amazon Web Services</div>
-      </div>
-      <div class="cert-card" onclick="selectCert(this,'PMI CPAI','PMI Certified in AI for Project Professionals')">
-        <div class="cert-name">PMI CPAI</div>
-        <div class="cert-sub">Project Management Institute</div>
-      </div>
-      <div class="cert-card" onclick="selectCert(this,'AIGP','AI Governance Professional')">
-        <div class="cert-name">AIGP</div>
-        <div class="cert-sub">IAPP AI Governance</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <button class="primary" id="start-btn" onclick="startSession()" disabled>Start session</button>
-      <span style="font-size:13px;color:#999" id="sel-hint">Select a certification above</span>
-    </div>
+  <div class="card">
+    <label for="notes">Study notes or topics</label>
+    <textarea id="notes" placeholder="Paste your notes here..."></textarea>
+    <button disabled>Analyze (coming soon)</button>
   </div>
 
-  <!-- SCREEN 2: QUIZ -->
-  <div id="screen-quiz">
-    <div class="meta-row">
-      <span class="meta-pill cert" id="quiz-cert-label"></span>
-      <span class="meta-pill qnum" id="quiz-qnum"></span>
-      <div style="flex:1;min-width:120px;">
-        <div class="score-bar-wrap"><div class="score-bar" id="score-bar" style="width:0%"></div></div>
-        <div style="font-size:11px;color:#888" id="score-text">0 correct</div>
-      </div>
-      <button class="ghost" style="font-size:13px;padding:6px 12px;" onclick="endSession()">End session</button>
-    </div>
-    <div id="question-area"></div>
-    <div style="margin-top:4px;">
-      <button class="primary" id="next-btn" onclick="nextQuestion()" style="display:none">Next question →</button>
-    </div>
-  </div>
-
-  <!-- SCREEN 3: DONE -->
-  <div id="screen-done">
-    <div class="done-card">
-      <div class="big-score" id="final-pct"></div>
-      <div style="font-size:15px;color:#666;margin-top:6px;" id="final-frac"></div>
-      <div style="font-size:13px;color:#aaa;margin-top:4px;margin-bottom:1.5rem;" id="final-cert"></div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        <button class="primary" onclick="restartSame()">Retry same cert</button>
-        <button class="ghost" onclick="goHome()">Choose different cert</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer">Powered by Claude · Built for iCertify</div>
+  <div class="footer">Powered by iCertify</div>
 </div>
-
-<script>
-let selectedCert = null, selectedCertFull = null;
-let history = [], questionCount = 0, correctCount = 0;
-const totalQuestions = 10;
-let awaitingAnswer = false;
-
-function getKey() { return 'PASTE-YOUR-KEY-HERE'; }
-
-function selectCert(el, short, full) {
-  document.querySelectorAll('.cert-card').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedCert = short; selectedCertFull = full;
-  document.getElementById('start-btn').disabled = false;
-  document.getElementById('sel-hint').textContent = short + ' selected';
-}
-
-async function startSession() {
-  questionCount = 0; correctCount = 0; history = [];
-  show('screen-quiz');
-  document.getElementById('quiz-cert-label').textContent = selectedCert;
-  updateScore();
-  await loadQuestion();
-}
-
-function show(id) {
-  ['screen-select','screen-quiz','screen-done'].forEach(s => {
-    document.getElementById(s).style.display = s === id ? 'block' : 'none';
-  });
-}
-
-function updateScore() {
-  document.getElementById('quiz-qnum').textContent = 'Q' + questionCount + ' of ' + totalQuestions;
-  const pct = questionCount > 1 ? Math.round((correctCount / (questionCount - 1)) * 100) : 0;
-  document.getElementById('score-bar').style.width = (questionCount > 1 ? pct : 0) + '%';
-  document.getElementById('score-text').textContent = correctCount + ' correct' + (questionCount > 1 ? ' (' + pct + '%)' : '');
-}
-
-async function loadQuestion() {
-  questionCount++;
-  document.getElementById('quiz-qnum').textContent = 'Q' + questionCount + ' of ' + totalQuestions;
-  document.getElementById('next-btn').style.display = 'none';
-  awaitingAnswer = true;
-
-  document.getElementById('question-area').innerHTML = `<div class="loading-text"><span class="loader"></span>Generating question ${questionCount}...</div>`;
-
-  const system = `You are a rigorous certification exam coach for ${selectedCertFull} (${selectedCert}).
-Generate a single multiple-choice practice exam question. Return ONLY valid JSON:
-{
-  "question": "Full question text",
-  "options": { "A": "...", "B": "...", "C": "...", "D": "..." },
-  "correct": "A",
-  "explanation": "2-4 sentence explanation of why the correct answer is right and the others wrong.",
-  "topic": "Brief topic label"
-}
-Questions must be at exam difficulty. Vary topics. No repeated questions. Return ONLY JSON.`;
-
-  const userMsg = history.length === 0
-    ? `Generate question 1 for the ${selectedCert} exam.`
-    : `Generate question ${questionCount}. Topics covered so far: ${history.map(h=>h.topic).join(', ')}. Choose a different topic.`;
-
-  try {
-    const msgs = [];
-    history.forEach(h => { msgs.push({role:'user',content:h.u}); msgs.push({role:'assistant',content:h.a}); });
-    msgs.push({role:'user',content:userMsg});
-
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": getKey(),
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system, messages: msgs })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-    const raw = data.content?.map(b=>b.text||'').join('') || '';
-    const q = JSON.parse(raw.replace(/```json|```/g,'').trim());
-    history.push({ topic: q.topic, u: userMsg, a: raw });
-    renderQuestion(q);
-  } catch(e) {
-    document.getElementById('question-area').innerHTML = `<div style="font-size:14px;color:#A32D2D;padding:12px;background:#FCEBEB;border-radius:8px;">Error: ${e.message || 'Failed to load question.'} <button class="ghost" style="font-size:13px;margin-left:8px;" onclick="loadQuestion()">Retry</button></div>`;
-  }
-}
-
-function esc(s) { return s.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$'); }
-
-function renderQuestion(q) {
-  const opts = ['A','B','C','D'].map(l =>
-    `<button class="option-btn" id="opt-${l}" onclick="answer('${l}','${q.correct}',\`${esc(q.explanation)}\`)">${l}. ${q.options[l]}</button>`
-  ).join('');
-  document.getElementById('question-area').innerHTML = `
-    <div class="card">
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#888;margin-bottom:10px;">${q.topic}</div>
-      <div class="question-text">${q.question}</div>
-      <div class="options">${opts}</div>
-    </div>
-    <div id="exp-area"></div>
-  `;
-}
-
-function answer(chosen, correct, explanation) {
-  if (!awaitingAnswer) return;
-  awaitingAnswer = false;
-  ['A','B','C','D'].forEach(l => {
-    const btn = document.getElementById('opt-'+l);
-    btn.disabled = true;
-    if (l===correct && l===chosen) btn.classList.add('correct');
-    else if (l===chosen) btn.classList.add('wrong');
-    else if (l===correct) btn.classList.add('reveal');
-  });
-  const isCorrect = chosen === correct;
-  if (isCorrect) correctCount++;
-  updateScore();
-  document.getElementById('exp-area').innerHTML = `
-    <div class="explanation-card ${isCorrect?'correct-exp':'wrong-exp'}">
-      <div class="exp-label">${isCorrect ? 'Correct!' : 'Not quite — correct answer: ' + correct}</div>
-      <div>${explanation}</div>
-    </div>`;
-  const nb = document.getElementById('next-btn');
-  nb.style.display = 'inline-block';
-  if (questionCount >= totalQuestions) { nb.textContent = 'See results'; nb.onclick = showResults; }
-  else { nb.textContent = 'Next question →'; nb.onclick = nextQuestion; }
-}
-
-function nextQuestion() { loadQuestion(); }
-
-function showResults() {
-  show('screen-done');
-  const pct = Math.round((correctCount / totalQuestions) * 100);
-  document.getElementById('final-pct').textContent = pct + '%';
-  document.getElementById('final-frac').textContent = correctCount + ' of ' + totalQuestions + ' correct';
-  document.getElementById('final-cert').textContent = selectedCertFull;
-}
-
-function endSession() { questionCount > 1 ? showResults() : goHome(); }
-function restartSame() { startSession(); }
-function goHome() {
-  show('screen-select');
-  document.querySelectorAll('.cert-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('start-btn').disabled = true;
-  document.getElementById('sel-hint').textContent = 'Select a certification above';
-}
-</script>
 </body>
 </html>
